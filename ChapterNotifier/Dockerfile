@@ -1,19 +1,3 @@
-# Imagen base para preparar los ficheros
-FROM alpine as intermediate
-LABEL stage=intermediate
-
-# Instalamos Git en el la imagen intermedia
-RUN apk update && \
-    apk add --update git && \
-    apk add --update openssh
-
-# Hacemos el clone del repositorio donde esta ChapterNotifier
-RUN git clone https://github.com/Naipsas/TelegramBots.git
-
-# Copiamos el fichero requirements para tenerlo disponible al hacer
-# el setup de la segunda imagen
-COPY ./requirements.txt /requirements.txt
-
 # Imagen FINAL
 FROM python:3.5-slim
 
@@ -25,8 +9,8 @@ WORKDIR /app
 # Copiamos el directorio actual a dicho directorio. El primero es
 # en el host donde estamos ejecutando esto, y el segundo es en el
 # contenedor.
-COPY --from=intermediate ./TelegramBots/ChapterNotifier/ /app/
-COPY --from=intermediate ./requirements.txt /app/requirements.txt
+COPY ./TelegramBots/ChapterNotifier/ /app/
+COPY ./requirements.txt /app/requirements.txt
 
 # Instalamos dependencias necesarias en el contenedor. Las dependencias
 # se escriben en el fichero requirements.txt
